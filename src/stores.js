@@ -1,3 +1,3 @@
 import { writable } from 'svelte/store';
 
-export const originalSentencePromise = writable([]), scorePromise = writable(0)
+export const originalSentenceAsPromise = writable([]), scoreAsPromise = writable(0), counterAsPromise = writable(0)

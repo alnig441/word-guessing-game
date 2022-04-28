@@ -1,5 +1,5 @@
 
-import { originalSentencePromise } from "../stores.js"
+import { originalSentenceAsPromise } from "../stores.js"
 
 export const UTIL = {
 
@@ -7,7 +7,7 @@ export const UTIL = {
     const RESPONSE = await fetch(url);
     const SENTENCE = await RESPONSE.json();
     const WORDS = SENTENCE.data.sentence.split(' ');
-    originalSentencePromise.set(WORDS);
+    originalSentenceAsPromise.set(WORDS);
     return UTIL.wordScrambler(WORDS);
   },
 

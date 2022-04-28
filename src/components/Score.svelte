@@ -1,8 +1,8 @@
 <script>
-  import { scorePromise } from "../stores.js";
+  import { scoreAsPromise } from "../stores.js";
   let appScore;
 
-  scorePromise.subscribe(value => appScore = value)
+  scoreAsPromise.subscribe(value => appScore = value)
 
 </script>
 
