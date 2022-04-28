@@ -1,9 +1,13 @@
+
+import { originalSentencePromise } from "../stores.js"
+
 export const UTIL = {
 
   getSentence: async function(url) {
     const RESPONSE = await fetch(url);
     const SENTENCE = await RESPONSE.json();
     const WORDS = SENTENCE.data.sentence.split(' ');
+    originalSentencePromise.set(WORDS);
     return UTIL.wordScrambler(WORDS);
   },
 
