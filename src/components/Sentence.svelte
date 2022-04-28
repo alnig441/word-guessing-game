@@ -1,15 +1,15 @@
 <script>
 import { onMount } from "svelte";
 import { UTIL } from "../app_modules/UTIL.js";
-
+import { scrambledSentenceAsPromise } from "../stores.js"
 
 let counter = 1;
-const URL = `https://api.hatchways.io/assessment/sentences/${counter}`;
 
 let words;
+scrambledSentenceAsPromise.subscribe(value => words = value)
 
 onMount(async function() {
-  words = await UTIL.getSentence(URL);
+  words = await UTIL.getSentence(counter);
 })
 
 

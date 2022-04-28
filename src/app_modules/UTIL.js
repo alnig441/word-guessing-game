@@ -1,14 +1,17 @@
 
-import { originalSentenceAsPromise } from "../stores.js"
+import { originalSentenceAsPromise, scrambledSentenceAsPromise } from "../stores.js"
 
 export const UTIL = {
 
-  getSentence: async function(url) {
-    const RESPONSE = await fetch(url);
+  getSentence: async function(counter) {
+    const URL = `https://api.hatchways.io/assessment/sentences/${counter}`
+    const RESPONSE = await fetch(URL);
     const SENTENCE = await RESPONSE.json();
     const WORDS = SENTENCE.data.sentence.split(' ');
+    const SCRAMBLED = UTIL.wordScrambler(WORDS);
     originalSentenceAsPromise.set(WORDS);
-    return UTIL.wordScrambler(WORDS);
+    scrambledSentenceAsPromise.set(SCRAMBLED);
+    return SCRAMBLED;
   },
 
   wordScrambler: function(words) {
