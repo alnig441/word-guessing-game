@@ -9,13 +9,14 @@ body {
 	box-sizing: border-box;
 	font-family: Open Sans;
 	text-align: center;
+	display: flex;
 }
 
 main {
-	width: 50%;
+	width: 25%;
 	margin: auto;
 	background-color: white;
-
+	border-radius: 5px;
 }
 
 input {
