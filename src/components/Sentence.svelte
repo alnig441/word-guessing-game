@@ -22,5 +22,7 @@ onMount(async function() {
 </div>
 
 <style>
-
+  h1 {
+    color: steelblue;
+  }
 </style>
