@@ -7,7 +7,7 @@ export const UTIL = {
     const URL = `https://api.hatchways.io/assessment/sentences/${counter}`
     const RESPONSE = await fetch(URL);
     const SENTENCE = await RESPONSE.json();
-    const WORDS = SENTENCE.data.sentence.split(' ');
+    const WORDS = SENTENCE.data.sentence.trim().split(' ');
     const SCRAMBLED = UTIL.wordScrambler(WORDS);
     originalSentenceAsPromise.set(WORDS);
     scrambledSentenceAsPromise.set(SCRAMBLED);
