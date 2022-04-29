@@ -5,7 +5,8 @@
   let sentence;
   let counter = 1;
   let score;
-  let hide='hide' ;
+  // let hide='hide' ;
+  let hide = 'true';
   let correctAnswers = 0;
 
   originalSentenceAsPromise.subscribe(value => {
@@ -14,7 +15,8 @@
   scoreAsPromise.subscribe(value => score = value)
 
   async function getNextSentence() {
-    hide = 'hide';
+    // hide = 'hide';
+    hide = true;
     correctAnswers = 0;
     counter ++;
     score ++;
@@ -40,7 +42,7 @@
       // this.setAttribute("class", "disabled")
     }
     if (correctAnswers === LENGTH) {
-      hide ='';
+      hide = 'false';
       score ++;
       scoreAsPromise.set(score);
     }
@@ -62,7 +64,11 @@
     {/each}
     </div>
   {/each}
-  <input type="submit" class="{hide}" on:click="{getNextSentence}" value="Next">
+  {#if hide === 'false'}
+    <div class="flex-item">
+      <input type="submit" on:click="{getNextSentence}" value="Next">
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -97,8 +103,13 @@
     margin: 0px;
   }
 
+  input[type="submit"] {
+    width: auto;
+  }
+
   input.space {
     background-color: #ffb74d;
+    /* width: auto; */
   }
 
   input.letter {
