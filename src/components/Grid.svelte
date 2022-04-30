@@ -20,7 +20,6 @@
     }
 
     await tick();
-    console.log('after')
     if(document.getElementById("submit")) {
       document.getElementById("submit").focus();
     } else if(document.getElementById("letter-0-0")) {
@@ -82,7 +81,7 @@
         i++;
       }
     }
-    
+
     inputItem --;
 
     if(inputs[inputItem].hasAttribute("disabled")) {
