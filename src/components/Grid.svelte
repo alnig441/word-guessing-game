@@ -4,7 +4,6 @@
   import { beforeUpdate, tick } from 'svelte';
 
   beforeUpdate(async () => {
-
     document.getElementById("body").addEventListener("click", (e) => {
       e.preventDefault();
       if(!spellChallengeIsComplete) {
@@ -21,7 +20,7 @@
     }
 
     await tick();
-
+    console.log('after')
     if(document.getElementById("submit")) {
       document.getElementById("submit").focus();
     } else if(document.getElementById("letter-0-0")) {
@@ -59,7 +58,7 @@
   function redirectCallToAction(e) {
     if(e.key.toLowerCase() === "backspace"){
       if(inputItem > 0) {
-        unDoLastAction();
+        unDoLastAction(this);
       }
     }
     else if(e.key.toLowerCase() === "enter" && this.attributes['type'].value === 'submit') {
@@ -70,7 +69,20 @@
     }
   }
 
-  function unDoLastAction() {
+  function unDoLastAction(input) {
+
+    if(input.attributes['id'].value != 'focusElementID') {
+      let i = 0;
+
+      while(i < inputs.length) {
+        if(inputs[i].attributes['id'].value === input.attributes['id'].value) {
+          inputItem = i;
+          break;
+        }
+        i++;
+      }
+    }
+    
     inputItem --;
 
     if(inputs[inputItem].hasAttribute("disabled")) {
