@@ -1,6 +1,14 @@
 <script>
   import { UTIL } from "../app_modules/UTIL.js";
   import { originalSentenceAsPromise, scoreAsPromise } from "../stores.js";
+  import { beforeUpdate, tick } from 'svelte';
+
+  beforeUpdate(async () => {
+    await tick();
+    if(document.getElementById('submit')) {
+      document.getElementById('submit').focus();
+    }
+  });
 
   let inputs;
   let sentence;
@@ -25,7 +33,42 @@
       inputs[i].removeAttribute("style");
       inputs[i].value = "";
     }
+      return;
+  }
+
+  function redirectCallToAction(e) {
+    if(e.key.toLowerCase() === "backspace"){
+      inputItem = resetInputItem();
+      goBack();
+    }
+    else if(e.key.toLowerCase() === "enter" && this.attributes['type'].value === 'submit') {
+      getNextSentence()
+    }
+    else if(e.key.length === 1){
+      checkLetter(e, this);
+    }
+  }
+
+  function goBack() {
+    inputs[inputItem].focus();
+    inputs[inputItem].value= "";
     return;
+  }
+
+  function resetInputItem() {
+
+    let indices = [];
+    let newIndex;
+
+    for(var i = 0 ; i < inputItem ; i ++) {
+      if(!inputs[i].hasAttribute("disabled")) {
+        indices.push(i);
+      }
+    }
+
+    newIndex = indices.length > 0 ? indices[indices.length - 1] : inputItem
+
+    return newIndex;
   }
 
   async function getNextSentence() {
@@ -43,17 +86,17 @@
     return;
   }
 
-  function checkLetter(e) {
+  function checkLetter(e, input) {
     const LENGTH = sentence.toString().length;
-    let value = this.attributes['data-value'].value;
+    let value = input.attributes['data-value'].value;
     inputItem ++;
 
     if(e.key.toLowerCase() === value.toLowerCase()){
       correctAnswers ++;
-      this.setAttribute('disabled', true);
-      this.setAttribute('data-success', 'true')
-      this.setAttribute('style', "background-color:#4caf50")
-      this.value = e.key;
+      input.setAttribute('disabled', true);
+      input.setAttribute('data-success', 'true')
+      input.setAttribute('style', "background-color:#4caf50")
+      input.value = e.key;
     }
 
     if(inputItem < inputs.length) {
@@ -65,7 +108,9 @@
     }
 
     return;
+
   }
+
 
 </script>
 <form id="grid" autocomplete="off">
@@ -73,11 +118,11 @@
     <div class="flex-container">
     {#each word as letter, j}
       <div class="flex-item" >
-        <input class="letter" type="text" data-value="{letter}" value="" maxlength="1" on:keyup="{checkLetter}">
+        <input class="letter" type="text" data-value="{letter}" value="" maxlength="1" on:keyup="{redirectCallToAction}" >
       </div>
     {#if j === (word.length - 1) && i < (sentence.length - 1) }
       <div class="flex-item">
-        <input class="space" type="text" data-value=" " maxlength="1" on:keyup="{checkLetter}">
+        <input class="space" type="text" data-value=" " maxlength="1" on:keyup="{redirectCallToAction}">
       </div>
     {/if}
     {/each}
@@ -85,7 +130,7 @@
   {/each}
   {#if hide === 'false'}
     <div class="flex-item">
-      <input type="submit" on:click="{getNextSentence}" value="Next" on:submit="{getNextSentence}">
+      <input id="submit" type="submit" value="Next" on:click="{getNextSentence}" on:keypress|preventDefault="{redirectCallToAction}">
     </div>
   {/if}
 </form>
