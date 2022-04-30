@@ -43,8 +43,9 @@
 
   function redirectCallToAction(e) {
     if(e.key.toLowerCase() === "backspace"){
-      inputItem = resetInputItem();
-      goBack();
+      if(inputItem > 0) {
+        unDoLastAction();
+      }
     }
     else if(e.key.toLowerCase() === "enter" && this.attributes['type'].value === 'submit') {
       getNextSentence()
@@ -54,26 +55,18 @@
     }
   }
 
-  function goBack() {
+  function unDoLastAction() {
+    inputItem --;
+
+    if(inputs[inputItem].hasAttribute("disabled")) {
+      inputs[inputItem].removeAttribute("disabled");
+      inputs[inputItem].removeAttribute("style");
+      correctAnswers --;
+    }
+
     inputs[inputItem].focus();
     inputs[inputItem].value= "";
     return;
-  }
-
-  function resetInputItem() {
-
-    let indices = [];
-    let newIndex;
-
-    for(var i = 0 ; i < inputItem ; i ++) {
-      if(!inputs[i].hasAttribute("disabled")) {
-        indices.push(i);
-      }
-    }
-
-    newIndex = indices.length > 0 ? indices[indices.length - 1] : inputItem
-
-    return newIndex;
   }
 
   async function getNextSentence() {
