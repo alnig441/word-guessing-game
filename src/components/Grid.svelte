@@ -45,13 +45,9 @@
 
   function redirectCallToAction(e) {
     if(e.key.toLowerCase() === "backspace"){
-<<<<<<< HEAD
       if(inputItem > 0) {
         unDoLastAction();
       }
-=======
-      unDo();
->>>>>>> fed4b417ea5978d30469cac9b1df938dd5bcd01b
     }
     else if(e.key.toLowerCase() === "enter" && this.attributes['type'].value === 'submit') {
       getNextSentence()
@@ -61,27 +57,8 @@
     }
   }
 
-<<<<<<< HEAD
   function unDoLastAction() {
     inputItem --;
-=======
-  function unDo() {
-    inputItem --;
-    let activeInput = inputs[inputItem];
-    
-    activeInput.focus();
-    activeInput.value = "";
-    activeInput.removeAttribute("style");
-
-    if(activeInput.hasAttribute("disabled")) {
-      activeInput.removeAttribute("disabled");
-      correctAnswers --;
-    }
-    return;
-  }
-
-  function resetInputItem() {
->>>>>>> fed4b417ea5978d30469cac9b1df938dd5bcd01b
 
     if(inputs[inputItem].hasAttribute("disabled")) {
       inputs[inputItem].removeAttribute("disabled");
