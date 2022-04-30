@@ -7,7 +7,9 @@
     if(document.getElementById("flex-item-0-0")) {
       document.getElementById("flex-item-0-0").focus();
     }
+
     await tick();
+
     if(document.getElementById("submit")) {
       document.getElementById("submit").focus();
     } else if(document.getElementById("flex-item-0-0")) {
@@ -43,8 +45,7 @@
 
   function redirectCallToAction(e) {
     if(e.key.toLowerCase() === "backspace"){
-      inputItem = resetInputItem();
-      goBack();
+      unDo();
     }
     else if(e.key.toLowerCase() === "enter" && this.attributes['type'].value === 'submit') {
       getNextSentence()
@@ -54,9 +55,18 @@
     }
   }
 
-  function goBack() {
-    inputs[inputItem].focus();
-    inputs[inputItem].value= "";
+  function unDo() {
+    inputItem --;
+    let activeInput = inputs[inputItem];
+    
+    activeInput.focus();
+    activeInput.value = "";
+    activeInput.removeAttribute("style");
+
+    if(activeInput.hasAttribute("disabled")) {
+      activeInput.removeAttribute("disabled");
+      correctAnswers --;
+    }
     return;
   }
 
