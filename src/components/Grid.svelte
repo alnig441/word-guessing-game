@@ -4,16 +4,26 @@
   import { beforeUpdate, tick } from 'svelte';
 
   beforeUpdate(async () => {
-    if(document.getElementById("flex-item-0-0")) {
-      document.getElementById("flex-item-0-0").focus();
+
+    document.getElementById("body").addEventListener("click", (e) => {
+      e.preventDefault();
+      if(!focusElementID) {
+        document.getElementById('letter-0-0').focus();
+      } else {
+        document.getElementById(focusElementID).focus();
+      }
+    })
+
+    if(document.getElementById("letter-0-0")) {
+      document.getElementById("letter-0-0").focus();
     }
 
     await tick();
 
     if(document.getElementById("submit")) {
       document.getElementById("submit").focus();
-    } else if(document.getElementById("flex-item-0-0")) {
-      document.getElementById("flex-item-0-0").focus();
+    } else if(document.getElementById("letter-0-0")) {
+      document.getElementById("letter-0-0").focus();
     }
   });
 
@@ -24,6 +34,7 @@
   let hide = 'true';
   let correctAnswers = 0;
   let inputItem = 0;
+  let focusElementID;
 
   originalSentenceAsPromise.subscribe(value => {
     inputItem = 0;
@@ -67,6 +78,8 @@
     }
 
     inputs[inputItem].focus();
+    focusElementID = inputs[inputItem].attributes['id'].value
+
     inputs[inputItem].value= "";
     return;
   }
@@ -82,6 +95,7 @@
     }
 
     scoreAsPromise.set(score);
+    focusElementID = "letter-0-0";
 
     return;
   }
@@ -90,6 +104,7 @@
     const LENGTH = sentence.toString().length;
     let value = input.attributes['data-value'].value;
     inputItem ++;
+
 
     if(e.key.toLowerCase() === value.toLowerCase()){
       correctAnswers ++;
@@ -101,6 +116,7 @@
 
     if(inputItem < inputs.length) {
       inputs[inputItem].focus();
+      focusElementID = inputs[inputItem].attributes['id'].value
     }
 
     if (correctAnswers === LENGTH) {
@@ -118,11 +134,11 @@
     <div class="flex-container">
     {#each word as letter, j}
       <div class="flex-item" >
-        <input id="flex-item-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" maxlength="1" on:keyup="{redirectCallToAction}" >
+        <input id="letter-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" maxlength="1" on:keyup="{redirectCallToAction}" >
       </div>
     {#if j === (word.length - 1) && i < (sentence.length - 1) }
       <div class="flex-item">
-        <input class="space" type="text" data-value=" " maxlength="1" on:keyup="{redirectCallToAction}">
+        <input id="space-{i}" class="space" type="text" data-value=" " maxlength="1" on:keyup="{redirectCallToAction}">
       </div>
     {/if}
     {/each}
