@@ -7,10 +7,12 @@
 
     document.getElementById("body").addEventListener("click", (e) => {
       e.preventDefault();
-      if(!focusElementID) {
-        document.getElementById('letter-0-0').focus();
-      } else {
-        document.getElementById(focusElementID).focus();
+      if(!spellChallengeIsComplete) {
+        if(!focusElementID) {
+          document.getElementById('letter-0-0').focus();
+        } else {
+          document.getElementById(focusElementID).focus();
+        }
       }
     })
 
@@ -31,10 +33,10 @@
   let sentence;
   let sentenceIndex = 1;
   let score;
-  let hide = 'true';
   let correctAnswers = 0;
   let inputItem = 0;
   let focusElementID;
+  let spellChallengeIsComplete = false;
 
   originalSentenceAsPromise.subscribe(value => {
     inputItem = 0;
@@ -63,7 +65,7 @@
     else if(e.key.toLowerCase() === "enter" && this.attributes['type'].value === 'submit') {
       getNextSentence()
     }
-    else if(e.key.length === 1){
+    else if(e.key.length === 1 && !spellChallengeIsComplete){
       checkLetter(e, this);
     }
   }
@@ -85,7 +87,7 @@
   }
 
   async function getNextSentence() {
-    hide = true;
+    spellChallengeIsComplete = false;
     correctAnswers = 0;
     sentenceIndex ++;
     score ++;
@@ -119,8 +121,12 @@
       focusElementID = inputs[inputItem].attributes['id'].value
     }
 
+    if(inputItem === inputs.length) {
+      focusElementID = inputs[inputItem - 1].attributes['id'].value
+    }
+
     if (correctAnswers === LENGTH) {
-      hide = 'false';
+      spellChallengeIsComplete = true;
     }
 
     return;
@@ -144,7 +150,7 @@
     {/each}
     </div>
   {/each}
-  {#if hide === 'false'}
+  {#if spellChallengeIsComplete}
     <div class="flex-item">
       <input id="submit" type="submit" value="Next" on:click="{getNextSentence}" on:keypress|preventDefault="{redirectCallToAction}">
     </div>
@@ -165,10 +171,6 @@
     flex-basis: auto;
     width: 100%;
     margin: 5px;
-  }
-
-  .hide {
-    display: none;
   }
 
   input[type="submit"] {
