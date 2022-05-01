@@ -29,24 +29,24 @@ export const API = function(){
     }
 
     return sentence;
+  }
 
-    function scramble(word){
-      const WORD = word.split('');
-      const BEGIN = WORD.shift();
-      const END = WORD.pop();
+  function scramble(word){
+    const WORD = word.split('');
+    const BEGIN = WORD.shift();
+    const END = WORD.pop();
 
-      let scrambled = BEGIN;
+    let scrambled = BEGIN;
 
-      let reducedWord = WORD;
+    let reducedWord = WORD;
 
-      for(let i = 0 ; i < reducedWord.length ; ) {
-        let targetIndex = Math.round(Math.random() * (reducedWord.length - 1));
-        scrambled += reducedWord.splice(targetIndex, 1);
-      }
-
-      scrambled += END;
-      return scrambled ;
+    for(let i = 0 ; i < reducedWord.length ; ) {
+      let targetIndex = Math.round(Math.random() * (reducedWord.length - 1));
+      scrambled += reducedWord.splice(targetIndex, 1);
     }
+
+    scrambled += END;
+    return scrambled ;
   }
 
   return { get: getSentence }
