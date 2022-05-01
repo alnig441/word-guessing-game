@@ -54,7 +54,7 @@
 
 
   function resetGrid() {
-    for(var i = 0 ; i < gridInputs.length ; i ++) {
+    for(var i = 0, l = gridInputs.length ; i < l ; i ++) {
       gridInputs[i].removeAttribute('disabled');
       gridInputs[i].removeAttribute("style");
       gridInputs[i].value = "";
