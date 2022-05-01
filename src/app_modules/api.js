@@ -14,17 +14,16 @@ export const API = function(){
   }
 
   function wordScrambler(words) {
-    const LENGTH = words.length;
-    let sentence = '';
+    let sentence = "";
 
-    for(var i = 0 ; i < LENGTH ; i ++) {
+    for(var i = 0, l = words.length ; i < l ; i ++) {
       if (words[i].length > 3) {
         sentence += scramble(words[i]);
       } else {
         sentence += words[i];
       }
-      if(i <= (LENGTH -1)) {
-        sentence += ' ';
+      if(i <= (l - 1)) {
+        sentence += " ";
       }
     }
 
