@@ -1,5 +1,5 @@
 <script>
-  import { UTIL } from "../app_modules/UTIL.js";
+  import { API } from "../app_modules/api";
   import { correctSentenceAsPromise, scoreAsPromise } from "../stores.js";
   import { beforeUpdate, tick } from 'svelte';
 
@@ -113,7 +113,7 @@
     score ++;
 
     if(nextSentenceIndex <= 10) {
-      await UTIL.getSentence(nextSentenceIndex);
+      await API.get(nextSentenceIndex);
     }
 
     scoreAsPromise.set(score);

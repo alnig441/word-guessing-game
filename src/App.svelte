@@ -3,7 +3,7 @@
 	import Instructions from "./components/Instructions.svelte";
 	import Score from "./components/Score.svelte";
 	import Grid from "./components/Grid.svelte";
-	import {scoreAsPromise} from "./stores.js";
+	import { scoreAsPromise } from "./stores.js";
 
 	let score;
 

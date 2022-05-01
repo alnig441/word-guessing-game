@@ -1,12 +1,12 @@
 <script>
 import { onMount } from "svelte";
-import { UTIL } from "../app_modules/UTIL.js";
+import { API } from "../app_modules/api";
 import { scrambledSentenceAsPromise } from "../stores.js"
 
 let words;
 
 onMount(async function() {
-  words = await UTIL.getSentence(1);
+  words = await API.get(1);
 })
 
 scrambledSentenceAsPromise.subscribe(assignWords);
