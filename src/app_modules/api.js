@@ -7,13 +7,13 @@ export const API = function(){
     const RESPONSE = await fetch(URL);
     const SENTENCE = await RESPONSE.json();
     const WORDS = SENTENCE.data.sentence.trim().split(' ');
-    const SCRAMBLED = wordScrambler(WORDS);
+    const SCRAMBLED = splitWords(WORDS);
     correctSentenceAsPromise.set(WORDS);
     scrambledSentenceAsPromise.set(SCRAMBLED);
     return SCRAMBLED;
   }
 
-  function wordScrambler(words) {
+  function splitWords(words) {
     let sentence = "";
 
     for(var i = 0, l = words.length ; i < l ; i ++) {

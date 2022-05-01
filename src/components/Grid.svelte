@@ -12,7 +12,9 @@
   let focusInputID;
   let spellChallengeIsComplete = false;
 
+  /* MAINTAIN FOCUS ON CURRENT GRID INPUT WHEN */
   beforeUpdate(async () => {
+    /* A:  CLICKING OCCURS OUTSIDE INPUT */
     document.getElementById("body").addEventListener("click", (e) => {
       e.preventDefault();
       if(!spellChallengeIsComplete) {
@@ -24,12 +26,9 @@
       }
     })
 
-    if(document.getElementById("letter-0-0")) {
-      document.getElementById("letter-0-0").focus();
-    }
-
     await tick();
 
+    /* B: GRID IS COMPLETE OR RELOADS */
     if(document.getElementById("submit")) {
       document.getElementById("submit").focus();
     } else if(document.getElementById("letter-0-0")) {
@@ -37,9 +36,9 @@
     }
   });
 
+  /* REACTIVELY BUILD GRID VIEW AND ASSIGN SCORE */
   correctSentenceAsPromise.subscribe(buildNewGrid);
   scoreAsPromise.subscribe(assignScore);
-
 
   function buildNewGrid(value) {
    currentGridInputItem = 0;
@@ -53,6 +52,7 @@
   }
 
 
+  /* RESET GRID */
   function resetGrid() {
     for(var i = 0, l = gridInputs.length ; i < l ; i ++) {
       gridInputs[i].removeAttribute('disabled');
@@ -62,6 +62,8 @@
       return;
   }
 
+
+  /* CTA DISPATCHER */
   function redirectCallToAction(e) {
     if(e.key.toLowerCase() === "backspace"){
       if(currentGridInputItem > 0) {
@@ -76,8 +78,10 @@
     }
   }
 
-  function unDoLastAction(input) {
 
+  /* UNDO CTA */
+  function unDoLastAction(input) {
+    /* RESET CURRENT INPUT IF INPUT SELECTED AFTER GRID COMPLETION */
     if(input.attributes['id'].value != focusInputID) {
       let i = 0;
 
@@ -90,6 +94,7 @@
       }
     }
 
+    /* UNDO PREVIOUS INPUT */
     currentGridInputItem --;
 
     if(gridInputs[currentGridInputItem].hasAttribute("disabled")) {
@@ -106,6 +111,8 @@
     return;
   }
 
+
+  /* GET NEXT SENTENCE AND UPDATE GAME SCORE CTA */
   async function getNextSentence() {
     spellChallengeIsComplete = false;
     coorectInputs = 0;
@@ -122,12 +129,14 @@
     return;
   }
 
+
+  /* CHECK CURRENT INPUT CTA */
   function checkLetter(e, input) {
     const LENGTH = correctSentence.toString().length;
     let value = input.attributes['data-value'].value;
     currentGridInputItem ++;
 
-
+    /* MARK CORRECT INPUT */
     if(e.key.toLowerCase() === value.toLowerCase()){
       coorectInputs ++;
       input.setAttribute('disabled', true);
@@ -136,15 +145,13 @@
       input.value = e.key;
     }
 
+    /* MOVE FOCUS TO NEXT INPUT */
     if(currentGridInputItem < gridInputs.length) {
       gridInputs[currentGridInputItem].focus();
       focusInputID = gridInputs[currentGridInputItem].attributes['id'].value
     }
 
-    if(currentGridInputItem === gridInputs.length) {
-      focusInputID = gridInputs[currentGridInputItem - 1].attributes['id'].value
-    }
-
+    /* MARK GRID COMPLETE */
     if (coorectInputs === LENGTH) {
       spellChallengeIsComplete = true;
     }
