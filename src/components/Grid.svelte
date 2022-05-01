@@ -1,16 +1,25 @@
 <script>
   import { UTIL } from "../app_modules/UTIL.js";
-  import { originalSentenceAsPromise, scoreAsPromise } from "../stores.js";
+  import { correctSentenceAsPromise, scoreAsPromise } from "../stores.js";
   import { beforeUpdate, tick } from 'svelte';
+
+  let gridInputs;
+  let correctSentence;
+  let nextSentenceIndex = 1;
+  let score;
+  let coorectInputs = 0;
+  let currentGridInputItem = 0;
+  let focusInputID;
+  let spellChallengeIsComplete = false;
 
   beforeUpdate(async () => {
     document.getElementById("body").addEventListener("click", (e) => {
       e.preventDefault();
       if(!spellChallengeIsComplete) {
-        if(!focusElementID) {
+        if(!focusInputID) {
           document.getElementById('letter-0-0').focus();
         } else {
-          document.getElementById(focusElementID).focus();
+          document.getElementById(focusInputID).focus();
         }
       }
     })
@@ -20,6 +29,7 @@
     }
 
     await tick();
+
     if(document.getElementById("submit")) {
       document.getElementById("submit").focus();
     } else if(document.getElementById("letter-0-0")) {
@@ -27,36 +37,34 @@
     }
   });
 
-  let inputs;
-  let sentence;
-  let sentenceIndex = 1;
-  let score;
-  let correctAnswers = 0;
-  let inputItem = 0;
-  let focusElementID;
-  let spellChallengeIsComplete = false;
+  correctSentenceAsPromise.subscribe(buildNewGrid);
+  scoreAsPromise.subscribe(assignScore);
 
-  originalSentenceAsPromise.subscribe(value => {
-    inputItem = 0;
-    sentence = value;
-    inputs = document.getElementsByTagName("input");
-    cleanInputs();
-   })
 
-  scoreAsPromise.subscribe(value => score = value)
+  function buildNewGrid(value) {
+   currentGridInputItem = 0;
+   correctSentence = value;
+   gridInputs = document.getElementsByTagName("input");
+   resetGrid();
+  }
 
-  function cleanInputs() {
-    for(var i = 0 ; i < inputs.length ; i ++) {
-      inputs[i].removeAttribute('disabled');
-      inputs[i].removeAttribute("style");
-      inputs[i].value = "";
+  function assignScore(value) {
+    score = value;
+  }
+
+
+  function resetGrid() {
+    for(var i = 0 ; i < gridInputs.length ; i ++) {
+      gridInputs[i].removeAttribute('disabled');
+      gridInputs[i].removeAttribute("style");
+      gridInputs[i].value = "";
     }
       return;
   }
 
   function redirectCallToAction(e) {
     if(e.key.toLowerCase() === "backspace"){
-      if(inputItem > 0) {
+      if(currentGridInputItem > 0) {
         unDoLastAction(this);
       }
     }
@@ -70,73 +78,74 @@
 
   function unDoLastAction(input) {
 
-    if(input.attributes['id'].value != 'focusElementID') {
+    if(input.attributes['id'].value != focusInputID) {
       let i = 0;
 
-      while(i < inputs.length) {
-        if(inputs[i].attributes['id'].value === input.attributes['id'].value) {
-          inputItem = i;
+      while(i < gridInputs.length) {
+        if(gridInputs[i].attributes['id'].value === input.attributes['id'].value) {
+          currentGridInputItem = i;
           break;
         }
         i++;
       }
     }
 
-    inputItem --;
+    currentGridInputItem --;
 
-    if(inputs[inputItem].hasAttribute("disabled")) {
-      inputs[inputItem].removeAttribute("disabled");
-      inputs[inputItem].removeAttribute("style");
-      correctAnswers --;
+    if(gridInputs[currentGridInputItem].hasAttribute("disabled")) {
+      gridInputs[currentGridInputItem].removeAttribute("disabled");
+      gridInputs[currentGridInputItem].removeAttribute("style");
+      coorectInputs --;
     }
 
-    inputs[inputItem].focus();
-    focusElementID = inputs[inputItem].attributes['id'].value
+    gridInputs[currentGridInputItem].focus();
+    focusInputID = gridInputs[currentGridInputItem].attributes['id'].value
 
-    inputs[inputItem].value= "";
+    gridInputs[currentGridInputItem].value= "";
+
     return;
   }
 
   async function getNextSentence() {
     spellChallengeIsComplete = false;
-    correctAnswers = 0;
-    sentenceIndex ++;
+    coorectInputs = 0;
+    nextSentenceIndex ++;
     score ++;
 
-    if(sentenceIndex <= 10) {
-      await UTIL.getSentence(sentenceIndex);
+    if(nextSentenceIndex <= 10) {
+      await UTIL.getSentence(nextSentenceIndex);
     }
 
     scoreAsPromise.set(score);
-    focusElementID = "letter-0-0";
+    focusInputID = "letter-0-0";
 
     return;
   }
 
   function checkLetter(e, input) {
-    const LENGTH = sentence.toString().length;
+    const LENGTH = correctSentence.toString().length;
     let value = input.attributes['data-value'].value;
-    inputItem ++;
+    currentGridInputItem ++;
 
 
     if(e.key.toLowerCase() === value.toLowerCase()){
-      correctAnswers ++;
+      coorectInputs ++;
       input.setAttribute('disabled', true);
       input.setAttribute('data-success', 'true')
       input.setAttribute('style', "background-color:#4caf50")
       input.value = e.key;
     }
 
-    if(inputItem < inputs.length) {
-      inputs[inputItem].focus();
-      focusElementID = inputs[inputItem].attributes['id'].value
+    if(currentGridInputItem < gridInputs.length) {
+      gridInputs[currentGridInputItem].focus();
+      focusInputID = gridInputs[currentGridInputItem].attributes['id'].value
     }
 
-    if(inputItem === inputs.length) {
-      focusElementID = inputs[inputItem - 1].attributes['id'].value
+    if(currentGridInputItem === gridInputs.length) {
+      focusInputID = gridInputs[currentGridInputItem - 1].attributes['id'].value
     }
 
-    if (correctAnswers === LENGTH) {
+    if (coorectInputs === LENGTH) {
       spellChallengeIsComplete = true;
     }
 
@@ -147,13 +156,13 @@
 
 </script>
 <form id="grid" autocomplete="off">
-  {#each sentence as word, i}
+  {#each correctSentence as word, i}
     <div class="flex-container">
     {#each word as letter, j}
       <div class="flex-item" >
         <input id="letter-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" maxlength="1" on:keyup="{redirectCallToAction}" >
       </div>
-    {#if j === (word.length - 1) && i < (sentence.length - 1) }
+    {#if j === (word.length - 1) && i < (correctSentence.length - 1) }
       <div class="flex-item">
         <input id="space-{i}" class="space" type="text" data-value=" " maxlength="1" on:keyup="{redirectCallToAction}">
       </div>

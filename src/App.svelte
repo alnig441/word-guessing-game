@@ -6,7 +6,12 @@
 	import {scoreAsPromise} from "./stores.js";
 
 	let score;
-	scoreAsPromise.subscribe(value => score = value);
+
+	scoreAsPromise.subscribe(assignScore);
+
+	function assignScore(value) {
+		score = value;
+	}
 
 </script>
 

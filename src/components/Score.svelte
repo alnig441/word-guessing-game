@@ -1,13 +1,17 @@
 <script>
   import { scoreAsPromise } from "../stores.js";
-  let appScore;
+  let score;
 
-  scoreAsPromise.subscribe(value => appScore = value)
+  scoreAsPromise.subscribe(assignScore);
+
+  function assignScore(value) {
+    score = value;
+  }
 
 </script>
 
 <div id="score">
-  <h2>Score: {appScore} </h2>
+  <h2>Score: { score } </h2>
 </div>
 
 <style>

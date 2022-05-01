@@ -3,15 +3,17 @@ import { onMount } from "svelte";
 import { UTIL } from "../app_modules/UTIL.js";
 import { scrambledSentenceAsPromise } from "../stores.js"
 
-let counter = 1;
-
 let words;
-scrambledSentenceAsPromise.subscribe(value => words = value)
 
 onMount(async function() {
-  words = await UTIL.getSentence(counter);
+  words = await UTIL.getSentence(1);
 })
 
+scrambledSentenceAsPromise.subscribe(assignWords);
+
+function assignWords(value) {
+  words = value;
+}
 
 </script>
 

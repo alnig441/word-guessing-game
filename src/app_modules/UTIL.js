@@ -1,5 +1,5 @@
 
-import { originalSentenceAsPromise, scrambledSentenceAsPromise } from "../stores.js"
+import { correctSentenceAsPromise, scrambledSentenceAsPromise } from "../stores.js"
 
 export const UTIL = {
 
@@ -9,7 +9,7 @@ export const UTIL = {
     const SENTENCE = await RESPONSE.json();
     const WORDS = SENTENCE.data.sentence.trim().split(' ');
     const SCRAMBLED = UTIL.wordScrambler(WORDS);
-    originalSentenceAsPromise.set(WORDS);
+    correctSentenceAsPromise.set(WORDS);
     scrambledSentenceAsPromise.set(SCRAMBLED);
     return SCRAMBLED;
   },
