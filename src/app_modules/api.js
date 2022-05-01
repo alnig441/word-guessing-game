@@ -17,7 +17,7 @@ export const API = function(){
     const LENGTH = words.length;
     let sentence = '';
 
-    for(let i = 0 ; i < LENGTH ; i ++) {
+    for(var i = 0 ; i < LENGTH ; i ++) {
       if (words[i].length > 3) {
         sentence += scramble(words[i]);
       } else {
@@ -37,10 +37,9 @@ export const API = function(){
     const END = WORD.pop();
 
     let scrambled = BEGIN;
-
     let reducedWord = WORD;
 
-    for(let i = 0 ; i < reducedWord.length ; ) {
+    for(var i = 0 ; i < reducedWord.length ; ) {
       let targetIndex = Math.round(Math.random() * (reducedWord.length - 1));
       scrambled += reducedWord.splice(targetIndex, 1);
     }
