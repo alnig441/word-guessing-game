@@ -6,7 +6,7 @@
   let gridInputs;
   let correctSentence;
   let nextSentenceIndex = 1;
-  let score;
+  let score = $scoreAsPromise;
   let coorectInputs = 0;
   let currentGridInputItem = 0;
   let focusInputID;
@@ -36,9 +36,8 @@
     }
   });
 
-  /* REACTIVELY BUILD GRID VIEW AND ASSIGN SCORE */
+  /* REACTIVELY BUILD GRID VIEW */
   correctSentenceAsPromise.subscribe(buildNewGrid);
-  scoreAsPromise.subscribe(assignScore);
 
   function buildNewGrid(value) {
    currentGridInputItem = 0;
@@ -46,11 +45,6 @@
    gridInputs = document.getElementsByTagName("input");
    resetGrid();
   }
-
-  function assignScore(value) {
-    score = value;
-  }
-
 
   /* RESET GRID */
   function resetGrid() {
@@ -123,7 +117,7 @@
       await API.get(nextSentenceIndex);
     }
 
-    scoreAsPromise.set(score);
+    $scoreAsPromise = score;
     focusInputID = "letter-0-0";
 
     return;
@@ -157,7 +151,6 @@
     }
 
     return;
-
   }
 
 
