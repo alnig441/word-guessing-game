@@ -3,14 +3,19 @@ import { correctSentenceAsPromise, scrambledSentenceAsPromise } from "../stores.
 export const API = function(){
 
   async function getSentence(counter) {
-    const URL = `https://api.hatchways.io/assessment/sentences/${counter}`
-    const RESPONSE = await fetch(URL);
-    const SENTENCE = await RESPONSE.json();
-    const WORDS = SENTENCE.data.sentence.trim().split(' ');
-    const SCRAMBLED = splitWords(WORDS);
-    correctSentenceAsPromise.set(WORDS);
-    scrambledSentenceAsPromise.set(SCRAMBLED);
-    return SCRAMBLED;
+    try {
+      const URL = `https://api.hatchways.io/assessment/sentences/${counter}`
+      const RESPONSE = await fetch(URL);
+      const SENTENCE = await RESPONSE.json();
+      const WORDS = SENTENCE.data.sentence.trim().split(' ');
+      const SCRAMBLED = splitWords(WORDS);
+      correctSentenceAsPromise.set(WORDS);
+      scrambledSentenceAsPromise.set(SCRAMBLED);
+      return SCRAMBLED;
+    } catch(error) {
+      return "API currently unavailable";
+    }
+
   }
 
   function splitWords(words) {
