@@ -2,6 +2,7 @@
   import { API } from "../app_modules/api";
   import { correctSentenceAsPromise, scoreAsPromise } from "../stores.js";
   import { beforeUpdate, tick } from 'svelte';
+  import sanitize from "../directives/sanitize";
 
   let gridInputs;
   let correctSentence;
@@ -59,6 +60,7 @@
 
   /* CTA DISPATCHER */
   function redirectCallToAction(e) {
+    console.log('dispatch', this.value, e.target.value)
     if(e.key.toLowerCase() === "backspace"){
       if(currentGridInputItem > 0) {
         unDoLastAction(this);
@@ -126,6 +128,7 @@
 
   /* CHECK CURRENT INPUT CTA */
   function checkLetter(e, input) {
+    console.log('check', e.target.value, input.value, e.key)
     const LENGTH = correctSentence.toString().length;
     let value = input.attributes['data-value'].value;
     currentGridInputItem ++;
@@ -160,11 +163,11 @@
     <div class="flex-container">
     {#each word as letter, j}
       <div class="flex-item" >
-        <input id="letter-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" maxlength="1" on:keyup="{redirectCallToAction}" >
+        <input id="letter-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" pattern="[a-zA-Z0-9]+" maxlength="1" on:input={sanitize} on:keyup="{redirectCallToAction}" >
       </div>
     {#if j === (word.length - 1) && i < (correctSentence.length - 1) }
       <div class="flex-item">
-        <input id="space-{i}" class="space" type="text" data-value=" " maxlength="1" on:keyup="{redirectCallToAction}">
+        <input id="space-{i}" class="space" type="text" data-value=" " pattern="[a-zA-Z0-9]+" maxlength="1" on:input="{sanitize}" on:keyup="{redirectCallToAction}">
       </div>
     {/if}
     {/each}
