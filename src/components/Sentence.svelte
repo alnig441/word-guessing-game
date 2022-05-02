@@ -5,8 +5,8 @@ import { scrambledSentenceAsPromise } from "../stores.js"
 
 let words;
 
-onMount(async function() {
-  words = await API.get(1);
+onMount(function() {
+  words = API.get(1);
 })
 
 scrambledSentenceAsPromise.subscribe(assignWords);

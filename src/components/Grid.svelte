@@ -60,7 +60,6 @@
 
   /* CTA DISPATCHER */
   function redirectCallToAction(e) {
-    console.log('dispatch', this.value, e.target.value)
     if(e.key.toLowerCase() === "backspace"){
       if(currentGridInputItem > 0) {
         unDoLastAction(this);
@@ -69,8 +68,8 @@
     else if(e.key.toLowerCase() === "enter" && this.attributes['type'].value === 'submit') {
       getNextSentence()
     }
-    else if(e.key.length === 1 && !spellChallengeIsComplete){
-      checkLetter(e, this);
+    else if(this.value.length === 1 && !spellChallengeIsComplete){
+      checkLetter(this);
     }
   }
 
@@ -109,14 +108,14 @@
 
 
   /* GET NEXT SENTENCE AND UPDATE GAME SCORE CTA */
-  async function getNextSentence() {
+  function getNextSentence() {
     spellChallengeIsComplete = false;
     coorectInputs = 0;
     nextSentenceIndex ++;
     score ++;
 
     if(nextSentenceIndex <= 10) {
-      await API.get(nextSentenceIndex);
+      API.get(nextSentenceIndex);
     }
 
     $scoreAsPromise = score;
@@ -127,19 +126,17 @@
 
 
   /* CHECK CURRENT INPUT CTA */
-  function checkLetter(e, input) {
-    console.log('check', e.target.value, input.value, e.key)
+  function checkLetter(input) {
     const LENGTH = correctSentence.toString().length;
-    let value = input.attributes['data-value'].value;
+    let correctValue = input.attributes['data-value'].value;
     currentGridInputItem ++;
 
     /* MARK CORRECT INPUT */
-    if(e.key.toLowerCase() === value.toLowerCase()){
+    if(input.value.toLowerCase() === correctValue.toLowerCase()){
       coorectInputs ++;
       input.setAttribute('disabled', true);
       input.setAttribute('data-success', 'true')
       input.setAttribute('style', "background-color:#4caf50")
-      input.value = e.key;
     }
 
     /* MOVE FOCUS TO NEXT INPUT */
