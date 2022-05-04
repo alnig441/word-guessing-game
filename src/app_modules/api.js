@@ -11,9 +11,10 @@ export const API = function(){
       const SCRAMBLED = splitWords(WORDS);
       correctSentenceAsPromise.set(WORDS);
       scrambledSentenceAsPromise.set(SCRAMBLED);
-      return SCRAMBLED;
+      return;
     } catch(error) {
-      return "API currently unavailable";
+      scrambledSentenceAsPromise.set(error);
+      return ;
     }
 
   }
