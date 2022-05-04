@@ -9,13 +9,17 @@ let message;
 let type;
 
 onMount(function() {
-  words = API.get(11);
+  words = API.get(1);
 })
 
 scrambledSentenceAsPromise.subscribe(assignWords);
 
 function assignWords(value) {
-  if(typeof value === 'string') {
+  if(!words) {
+    message = "... LOADING ...";
+    type = "information"
+  } else if(typeof value === 'string') {
+    message = null;
     words = value;
   }
   else {
@@ -26,7 +30,7 @@ function assignWords(value) {
 
 </script>
 {#if message}
-<Message {message} {type}/>
+  <Message {message} {type}/>
 {:else}
 <div id="sentence">
   <div id="scrambled-word">

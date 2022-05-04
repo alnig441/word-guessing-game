@@ -17,6 +17,9 @@ export let message, type
   .error {
     background-color: #f44336;
   }
+  .information {
+    background-color: #90caf9;
+  }
 
 
 </style>
