@@ -7,7 +7,6 @@
   let gridInputs;
   let correctSentence;
   let nextSentenceIndex = 1;
-  let score = $scoreAsPromise;
   let coorectInputs = 0;
   let currentGridInputItem = 0;
   let focusInputID;
@@ -112,13 +111,12 @@
     spellChallengeIsComplete = false;
     coorectInputs = 0;
     nextSentenceIndex ++;
-    score ++;
 
     if(nextSentenceIndex <= 10) {
       API.get(nextSentenceIndex);
     }
 
-    $scoreAsPromise = score;
+    scoreAsPromise.update(value => value + 1);
     focusInputID = "letter-0-0";
 
     return;

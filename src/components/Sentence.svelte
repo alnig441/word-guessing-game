@@ -29,6 +29,8 @@ function assignWords(value) {
 }
 
 </script>
+
+
 {#if message}
   <Message {message} {type}/>
 {:else}
@@ -38,6 +40,8 @@ function assignWords(value) {
   </div>
 </div>
 {/if}
+
+
 <style>
   h1 {
     color: steelblue;
