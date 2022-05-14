@@ -1,12 +1,4 @@
-<script>
-
-</script>
-
 <div id="instructions">
   <p>Guess the sentence! Start typing</p>
   <p>The yellow blocks are meant for spaces</p>
 </div>
-
-<style>
-
-</style>
