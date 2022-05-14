@@ -7,7 +7,7 @@
   let gridInputs;
   let correctSentence;
   let nextSentenceIndex = 1;
-  let coorectInputs = 0;
+  let correctInputs = 0;
   let currentGridInputItem = 0;
   let focusInputID;
   let spellChallengeIsComplete = false;
@@ -60,6 +60,10 @@
   /* CTA DISPATCHER */
   function redirectCallToAction(e) {
     if(e.key.toLowerCase() === "backspace"){
+      if(currentGridInputItem === gridInputs.length) {
+        this.setAttribute('disabled', true);
+      }
+
       if(currentGridInputItem > 0) {
         unDoLastAction(this);
       }
@@ -76,9 +80,8 @@
   /* UNDO CTA */
   function unDoLastAction(input) {
     /* RESET CURRENT INPUT IF INPUT SELECTED AFTER GRID COMPLETION */
-    if(input.attributes['id'].value != focusInputID) {
+    if(input.attributes['id'].value !== focusInputID) {
       let i = 0;
-
       while(i < gridInputs.length) {
         if(gridInputs[i].attributes['id'].value === input.attributes['id'].value) {
           currentGridInputItem = i;
@@ -90,11 +93,10 @@
 
     /* UNDO PREVIOUS INPUT */
     currentGridInputItem --;
-
     if(gridInputs[currentGridInputItem].hasAttribute("disabled")) {
       gridInputs[currentGridInputItem].removeAttribute("disabled");
       gridInputs[currentGridInputItem].removeAttribute("style");
-      coorectInputs --;
+      correctInputs --;
     }
 
     gridInputs[currentGridInputItem].focus();
@@ -109,7 +111,7 @@
   /* GET NEXT SENTENCE AND UPDATE GAME SCORE CTA */
   function getNextSentence() {
     spellChallengeIsComplete = false;
-    coorectInputs = 0;
+    correctInputs = 0;
     nextSentenceIndex ++;
 
     if(nextSentenceIndex <= 10) {
@@ -126,25 +128,32 @@
   /* CHECK CURRENT INPUT CTA */
   function checkLetter(input) {
     const LENGTH = correctSentence.toString().length;
-    let correctValue = input.attributes['data-value'].value;
+    const correctValue = input.attributes['data-value'].value;
     currentGridInputItem ++;
+    const doNotDisable = (currentGridInputItem === LENGTH && correctInputs < LENGTH - 1 );
 
     /* MARK CORRECT INPUT */
     if(input.value.toLowerCase() === correctValue.toLowerCase()){
-      coorectInputs ++;
-      input.setAttribute('disabled', true);
-      input.setAttribute('data-success', 'true')
-      input.setAttribute('style', "background-color:#4caf50")
+      correctInputs ++;
+      input.setAttribute('data-success', 'true');
+      input.setAttribute('style', "background-color:#4caf50");
+
+      if(!doNotDisable) {
+        input.setAttribute('disabled', true);
+      }
+
     }
 
     /* MOVE FOCUS TO NEXT INPUT */
     if(currentGridInputItem < gridInputs.length) {
       gridInputs[currentGridInputItem].focus();
       focusInputID = gridInputs[currentGridInputItem].attributes['id'].value
+    } else {
+      document.getElementById('grid').focus();
     }
 
     /* MARK GRID COMPLETE */
-    if (coorectInputs === LENGTH) {
+    if (correctInputs === LENGTH) {
       spellChallengeIsComplete = true;
     }
 
@@ -158,11 +167,11 @@
     <div class="flex-container">
     {#each word as letter, j}
       <div class="flex-item" >
-        <input id="letter-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" pattern="[a-zA-Z0-9]+" maxlength="1" on:input={sanitize} on:keyup="{redirectCallToAction}" >
+        <input id="letter-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" pattern="[a-zA-Z0-9]+" maxlength="1" on:input={sanitize} on:keyup|preventDefault="{redirectCallToAction}" >
       </div>
     {#if j === (word.length - 1) && i < (correctSentence.length - 1) }
       <div class="flex-item">
-        <input id="space-{i}" class="space" type="text" data-value=" " pattern="[a-zA-Z0-9]+" maxlength="1" on:input="{sanitize}" on:keyup="{redirectCallToAction}">
+        <input id="space-{i}" class="space" type="text" data-value=" " pattern="[a-zA-Z0-9]+" maxlength="1" on:input="{sanitize}" on:keyup|preventDefault="{redirectCallToAction}">
       </div>
     {/if}
     {/each}
