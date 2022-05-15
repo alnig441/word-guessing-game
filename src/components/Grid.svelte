@@ -71,7 +71,8 @@
     else if(e.key.toLowerCase() === "enter" && this.attributes['type'].value === 'submit') {
       getNextSentence()
     }
-    else if(this.value.length === 1 && !spellChallengeIsComplete){
+    else if(e.key.length === 1 && !spellChallengeIsComplete){
+      this.value = e.key;
       checkLetter(this);
     }
   }
