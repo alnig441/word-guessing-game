@@ -15,7 +15,8 @@ export const localStore = (key, value) => {
   return {
     subscribe,
     set: (value) => {
-      localStorage.setItem(key, value)
+      localStorage.setItem(key, value);
+      return set(value);
     },
     update
   };
