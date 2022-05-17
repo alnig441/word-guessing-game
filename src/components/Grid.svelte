@@ -1,12 +1,12 @@
 <script>
   import { API } from "../app_modules/api";
-  import { correctSentenceAsPromise, scoreAsPromise } from "../stores.js";
+  import { correctSentenceAsPromise, scoreAsPromise, nextSentenceAsPromise } from "../stores.js";
   import { beforeUpdate, tick } from 'svelte';
   import sanitize from "../directives/sanitize";
 
   let gridInputs;
   let correctSentence;
-  let nextSentenceIndex = 1;
+  let nextSentenceIndex = $nextSentenceAsPromise || 1;
   let correctInputs = 0;
   let currentGridInputItem = 0;
   let focusInputID;
@@ -40,10 +40,12 @@
   correctSentenceAsPromise.subscribe(buildNewGrid);
 
   function buildNewGrid(value) {
-   currentGridInputItem = 0;
-   correctSentence = value;
-   gridInputs = document.getElementsByTagName("input");
-   resetGrid();
+    if (value){
+     currentGridInputItem = 0;
+     correctSentence = value;
+     gridInputs = document.getElementsByTagName("input");
+     resetGrid();
+    }
   }
 
   /* RESET GRID */
@@ -119,7 +121,8 @@
       API.get(nextSentenceIndex);
     }
 
-    scoreAsPromise.update(value => value + 1);
+    scoreAsPromise.set(nextSentenceIndex - 1);
+    nextSentenceAsPromise.set(nextSentenceIndex);
     focusInputID = "letter-0-0";
 
     return;
@@ -164,20 +167,22 @@
 
 </script>
 <form id="grid" autocomplete="off">
-  {#each correctSentence as word, i}
-    <div class="flex-container">
-    {#each word as letter, j}
-      <div class="flex-item" >
-        <input id="letter-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" pattern="[a-zA-Z0-9]+" maxlength="1" on:input={sanitize} on:keyup|preventDefault="{redirectCallToAction}" >
+  {#if correctSentence}
+    {#each correctSentence as word, i}
+      <div class="flex-container">
+      {#each word as letter, j}
+        <div class="flex-item" >
+          <input id="letter-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" pattern="[a-zA-Z0-9]+" maxlength="1" on:input={sanitize} on:keyup|preventDefault="{redirectCallToAction}" >
+        </div>
+      {#if j === (word.length - 1) && i < (correctSentence.length - 1) }
+        <div class="flex-item">
+          <input id="space-{i}" class="space" type="text" data-value=" " pattern="[a-zA-Z0-9]+" maxlength="1" on:input="{sanitize}" on:keyup|preventDefault="{redirectCallToAction}">
+        </div>
+      {/if}
+      {/each}
       </div>
-    {#if j === (word.length - 1) && i < (correctSentence.length - 1) }
-      <div class="flex-item">
-        <input id="space-{i}" class="space" type="text" data-value=" " pattern="[a-zA-Z0-9]+" maxlength="1" on:input="{sanitize}" on:keyup|preventDefault="{redirectCallToAction}">
-      </div>
-    {/if}
     {/each}
-    </div>
-  {/each}
+  {/if}
   {#if spellChallengeIsComplete}
     <div class="flex-item">
       <input id="submit" type="submit" value="Next" on:click="{getNextSentence}" on:keypress|preventDefault="{redirectCallToAction}">

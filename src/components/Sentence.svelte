@@ -1,6 +1,4 @@
 <script>
-import { onMount } from "svelte";
-import { API } from "../app_modules/api";
 import { scrambledSentenceAsPromise } from "../stores.js"
 import Message from "./Message.svelte"
 
@@ -8,14 +6,10 @@ let words;
 let message;
 let type;
 
-onMount(function() {
-  words = API.get(1);
-})
-
 scrambledSentenceAsPromise.subscribe(assignWords);
 
 function assignWords(value) {
-  if(!words) {
+  if(!value) {
     message = "... LOADING ...";
     type = "information"
   } else if(typeof value === 'string') {
@@ -36,7 +30,7 @@ function assignWords(value) {
 {:else}
 <div id="sentence">
   <div id="scrambled-word">
-  <h1>{ words }</h1>
+  <h1>{words}</h1>
   </div>
 </div>
 {/if}
