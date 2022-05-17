@@ -3,9 +3,15 @@
 	import Instructions from "./components/Instructions.svelte";
 	import Score from "./components/Score.svelte";
 	import Grid from "./components/Grid.svelte";
-	import { scoreAsPromise } from "./stores.js";
+	import { scoreAsPromise, scrambledSentenceAsPromise } from "./stores.js";
+	import init from './app_modules/initialize.js';
+	import { onMount } from 'svelte';
 
 	let score;
+
+	onMount(() => {
+		init()
+	})
 
 	scoreAsPromise.subscribe(assignScore);
 
