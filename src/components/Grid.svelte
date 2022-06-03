@@ -7,8 +7,7 @@
   export let sentence;
 
   let gridInputs;
-  let correctSentence;
-  let correctInputs = 0;
+  let words;
   let currentGridInputItem = 0;
   let focusInputID;
   let spellChallengeIsComplete = false;
@@ -16,13 +15,13 @@
   /* MAINTAIN FOCUS ON CURRENT GRID INPUT WHEN */
   beforeUpdate(async () => {
     /* TEST if this sentence differs from previous, then clear grid */
-    if(correctSentence && (sentence.split(' ')[0] !== correctSentence[0])) {
+    if(words && (sentence.split(' ')[0] !== words[0])) {
       gridInputs = document.getElementsByTagName('input');
       resetGrid()
     }
     /* Build new grid from sentence */
     if(sentence) {
-      buildNewGrid(sentence.trim().split(' '));
+      buildNewGrid(sentence);
     }
     /* A:  CLICKING OCCURS OUTSIDE INPUT */
     document.getElementById("body").addEventListener("click", (e) => {
@@ -46,10 +45,10 @@
   });
 
   /* BUILD GRID VIEW */
-  function buildNewGrid(value) {
-    if (value){
+  function buildNewGrid(sentence) {
+    if(sentence) {
      currentGridInputItem = 0;
-     correctSentence = value;
+     words = sentence.trim().split(' ');
      gridInputs = document.getElementsByTagName("input");
     }
   }
@@ -68,10 +67,6 @@
   /* CTA DISPATCHER */
   function redirectCallToAction(e) {
     if(e.key.toLowerCase() === "backspace"){
-      /* TEST if this is the last input - correctInput tally only run if last input, otherwise tally = 0 */
-      if(correctInputs > 0) {
-        this.removeAttribute("style");
-      }
       if(currentGridInputItem > 0) {
         unDoLastAction(this);
       }
@@ -88,9 +83,10 @@
 
   /* UNDO CTA */
   function unDoLastAction(input) {
-    /* reset correctInput with every undo action */
-    correctInputs = 0;
-
+    /* TEST IF IS LAST INPUT */
+    if(input.attributes['id'].value === gridInputs[gridInputs.length -1].attributes['id'].value) {
+      input.removeAttribute('style');
+    }
     /* UNDO PREVIOUS INPUT */
     currentGridInputItem --;
     if(gridInputs[currentGridInputItem].hasAttribute("disabled")) {
@@ -119,8 +115,8 @@
   /* CHECK CURRENT INPUT CTA */
   function checkLetter(input) {
     const isLastInput = (input.attributes['id'].value === gridInputs[gridInputs.length -1].attributes['id'].value);
-    const LENGTH = correctSentence.toString().length;
-    const correctValue = input.attributes['data-value'].value;
+    const LENGTH = sentence.length;
+    const correctValue = sentence[currentGridInputItem];
     currentGridInputItem ++;
 
     /* MARK CORRECT INPUT */
@@ -140,6 +136,7 @@
 
     /* MARK GRID COMPLETE */
     if (isLastInput) {
+      let correctInputs = 0;
       for (var index in gridInputs) {
         const attr = gridInputs[index].attributes;
         if(attr && Object.hasOwn(attr,'disabled')) {
@@ -160,16 +157,16 @@
 
 </script>
 <form id="grid" autocomplete="off">
-  {#if correctSentence}
-    {#each correctSentence as word, i}
+  {#if words}
+    {#each words as word, i}
       <div class="flex-container">
       {#each word as letter, j}
         <div class="flex-item" >
-          <input id="letter-{i}-{j}" class="letter" type="text" data-value="{letter}" value="" pattern="[a-zA-Z0-9]+" maxlength="1" on:input={sanitize} on:keyup|preventDefault="{redirectCallToAction}" >
+          <input id="letter-{i}-{j}" class="letter" type="text" value="" pattern="[a-zA-Z0-9]+" maxlength="1" on:input={sanitize} on:keyup|preventDefault="{redirectCallToAction}" >
         </div>
-      {#if j === (word.length - 1) && i < (correctSentence.length - 1) }
+      {#if j === (word.length - 1) && i < (words.length - 1) }
         <div class="flex-item">
-          <input id="space-{i}" class="space" type="text" data-value=" " pattern="[a-zA-Z0-9]+" maxlength="1" on:input="{sanitize}" on:keyup|preventDefault="{redirectCallToAction}">
+          <input id="space-{i}" class="space" type="text" pattern="[a-zA-Z0-9]+" maxlength="1" on:input="{sanitize}" on:keyup|preventDefault="{redirectCallToAction}">
         </div>
       {/if}
       {/each}
