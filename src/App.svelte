@@ -7,9 +7,6 @@
 	import { onMount } from 'svelte';
 	import init from './app_modules/initialize';
 
-	// let score = $nextSentenceAsPromise;
-	// let sentences = $sentencesAsPromise;
-	// let sentence = $correctSentenceAsPromise;
 	let score, sentence, sentences;
 
 	onMount(() => {
@@ -49,6 +46,12 @@
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
+		}
+	}
+
+	@media only screen and (max-width: 640px) {
+		main {
+			width: 100%;
 		}
 	}
 </style>

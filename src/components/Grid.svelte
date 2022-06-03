@@ -162,11 +162,11 @@
       <div class="flex-container">
       {#each word as letter, j}
         <div class="flex-item" >
-          <input id="letter-{i}-{j}" class="letter" type="text" value="" pattern="[a-zA-Z0-9]+" maxlength="1" on:input={sanitize} on:keyup|preventDefault="{redirectCallToAction}" >
+          <input aria-label="enter character" id="letter-{i}-{j}" class="letter" type="text" value="" pattern="[a-zA-Z0-9]+" maxlength="1" on:input={sanitize} on:keyup|preventDefault="{redirectCallToAction}" >
         </div>
       {#if j === (word.length - 1) && i < (words.length - 1) }
         <div class="flex-item">
-          <input id="space-{i}" class="space" type="text" pattern="[a-zA-Z0-9]+" maxlength="1" on:input="{sanitize}" on:keyup|preventDefault="{redirectCallToAction}">
+          <input aria-label="enter character" id="space-{i}" class="space" type="text" pattern="[a-zA-Z0-9]+" maxlength="1" on:input="{sanitize}" on:keyup|preventDefault="{redirectCallToAction}">
         </div>
       {/if}
       {/each}
@@ -175,6 +175,7 @@
   {/if}
   {#if spellChallengeIsComplete}
     <div class="flex-item">
+      <label for="submit"></label>
       <input id="submit" type="submit" value="Next" on:click="{getNextSentence}" on:keypress|preventDefault="{redirectCallToAction}">
     </div>
   {/if}
