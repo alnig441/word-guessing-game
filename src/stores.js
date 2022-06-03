@@ -1,7 +1,8 @@
-import { writable } from 'svelte/store';
+import { writable, readable, derived   } from 'svelte/store';
 import { localStore } from './localStore';
 
-export const  correctSentenceAsPromise = localStore('originalSentence'),
-              scrambledSentenceAsPromise = localStore('scrambledSentence'),
-              scoreAsPromise = localStore('appScore'),
-              nextSentenceAsPromise = localStore('nextSentence')
+export const  nextSentenceAsPromise = localStore('nextSentence'),
+              sentencesAsPromise = writable([]),
+              correctSentenceAsPromise = derived([sentencesAsPromise, nextSentenceAsPromise], (value) => {
+                return (value[0][value[1]])
+              })
