@@ -3,21 +3,33 @@
 	import Instructions from "./components/Instructions.svelte";
 	import Score from "./components/Score.svelte";
 	import Grid from "./components/Grid.svelte";
-	import { scoreAsPromise, scrambledSentenceAsPromise } from "./stores.js";
-	import init from './app_modules/initialize.js';
+	import { sentencesAsPromise, nextSentenceAsPromise, correctSentenceAsPromise } from "./stores.js";
 	import { onMount } from 'svelte';
+	import init from './app_modules/initialize';
 
-	let score;
+	// let score = $nextSentenceAsPromise;
+	// let sentences = $sentencesAsPromise;
+	// let sentence = $correctSentenceAsPromise;
+	let score, sentence, sentences;
 
 	onMount(() => {
 		init()
+			.then(res => {
+				sentencesAsPromise.set(res);
+			})
 	})
 
-	scoreAsPromise.subscribe(assignScore);
+	nextSentenceAsPromise.subscribe(assignScore)
+	correctSentenceAsPromise.subscribe(assignSentence);
+
+	function assignSentence(value) {
+		sentence = value;
+	}
 
 	function assignScore(value) {
 		score = value;
 	}
+
 
 </script>
 
@@ -25,10 +37,10 @@
 {#if score === 10 }
 		<h1> You win! </h1>
 {:else}
-	<Sentence/>
+	<Sentence sentence={sentence}/>
 	<Instructions/>
-	<Score/>
-	<Grid/>
+	<Score score={score}/>
+	<Grid sentence={sentence}/>
 {/if}
 </main>
 

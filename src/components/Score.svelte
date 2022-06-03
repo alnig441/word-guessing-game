@@ -1,8 +1,9 @@
 <script>
-  import { scoreAsPromise } from "../stores.js";
+
+  export let score;
 
 </script>
 
 <div id="score">
-  <h2>Score: { $scoreAsPromise } </h2>
+  <h2>Score: {score } </h2>
 </div>

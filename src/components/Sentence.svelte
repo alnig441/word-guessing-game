@@ -1,26 +1,23 @@
 <script>
-import { scrambledSentenceAsPromise } from "../stores.js"
+import { beforeUpdate } from "svelte";
 import Message from "./Message.svelte"
+import { UTIL } from '../app_modules/utilities'
+
+export let sentence;
 
 let words;
 let message;
 let type;
 
-scrambledSentenceAsPromise.subscribe(assignWords);
-
-function assignWords(value) {
-  if(!value) {
+beforeUpdate(() => {
+  if(!sentence) {
     message = "... LOADING ...";
     type = "information"
-  } else if(typeof value === 'string') {
+  } else {
     message = null;
-    words = value;
+    words = UTIL.scramble(sentence);
   }
-  else {
-    message = value.message;
-    type = 'error';
-  }
-}
+})
 
 </script>
 

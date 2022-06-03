@@ -1,12 +1,13 @@
 <script>
   import { API } from "../app_modules/api";
-  import { correctSentenceAsPromise, scoreAsPromise, nextSentenceAsPromise } from "../stores.js";
+  import { nextSentenceAsPromise } from "../stores.js";
   import { beforeUpdate, tick } from 'svelte';
   import sanitize from "../directives/sanitize";
 
+  export let sentence;
+
   let gridInputs;
   let correctSentence;
-  let nextSentenceIndex = $nextSentenceAsPromise || 1;
   let correctInputs = 0;
   let currentGridInputItem = 0;
   let focusInputID;
@@ -14,6 +15,15 @@
 
   /* MAINTAIN FOCUS ON CURRENT GRID INPUT WHEN */
   beforeUpdate(async () => {
+    /* TEST if this sentence differs from previous, then clear grid */
+    if(correctSentence && (sentence.split(' ')[0] !== correctSentence[0])) {
+      gridInputs = document.getElementsByTagName('input');
+      resetGrid()
+    }
+    /* Build new grid from sentence */
+    if(sentence) {
+      buildNewGrid(sentence.trim().split(' '));
+    }
     /* A:  CLICKING OCCURS OUTSIDE INPUT */
     document.getElementById("body").addEventListener("click", (e) => {
       e.preventDefault();
@@ -27,7 +37,6 @@
     })
 
     await tick();
-
     /* B: GRID IS COMPLETE OR RELOADS */
     if(document.getElementById("submit")) {
       document.getElementById("submit").focus();
@@ -36,15 +45,12 @@
     }
   });
 
-  /* REACTIVELY BUILD GRID VIEW */
-  correctSentenceAsPromise.subscribe(buildNewGrid);
-
+  /* BUILD GRID VIEW */
   function buildNewGrid(value) {
     if (value){
      currentGridInputItem = 0;
      correctSentence = value;
      gridInputs = document.getElementsByTagName("input");
-     resetGrid();
     }
   }
 
@@ -62,10 +68,10 @@
   /* CTA DISPATCHER */
   function redirectCallToAction(e) {
     if(e.key.toLowerCase() === "backspace"){
-      if(currentGridInputItem === gridInputs.length) {
-        this.setAttribute('disabled', true);
+      /* TEST if this is the last input - correctInput tally only run if last input, otherwise tally = 0 */
+      if(correctInputs > 0) {
+        this.removeAttribute("style");
       }
-
       if(currentGridInputItem > 0) {
         unDoLastAction(this);
       }
@@ -82,24 +88,14 @@
 
   /* UNDO CTA */
   function unDoLastAction(input) {
-    /* RESET CURRENT INPUT IF INPUT SELECTED AFTER GRID COMPLETION */
-    if(input.attributes['id'].value !== focusInputID) {
-      let i = 0;
-      while(i < gridInputs.length) {
-        if(gridInputs[i].attributes['id'].value === input.attributes['id'].value) {
-          currentGridInputItem = i;
-          break;
-        }
-        i++;
-      }
-    }
+    /* reset correctInput with every undo action */
+    correctInputs = 0;
 
     /* UNDO PREVIOUS INPUT */
     currentGridInputItem --;
     if(gridInputs[currentGridInputItem].hasAttribute("disabled")) {
       gridInputs[currentGridInputItem].removeAttribute("disabled");
       gridInputs[currentGridInputItem].removeAttribute("style");
-      correctInputs --;
     }
 
     gridInputs[currentGridInputItem].focus();
@@ -114,38 +110,24 @@
   /* GET NEXT SENTENCE AND UPDATE GAME SCORE CTA */
   function getNextSentence() {
     spellChallengeIsComplete = false;
-    correctInputs = 0;
-    nextSentenceIndex ++;
-
-    if(nextSentenceIndex <= 10) {
-      API.get(nextSentenceIndex);
-    }
-
-    scoreAsPromise.set(nextSentenceIndex - 1);
-    nextSentenceAsPromise.set(nextSentenceIndex);
+    nextSentenceAsPromise.update();
     focusInputID = "letter-0-0";
-
     return;
   }
 
 
   /* CHECK CURRENT INPUT CTA */
   function checkLetter(input) {
+    const isLastInput = (input.attributes['id'].value === gridInputs[gridInputs.length -1].attributes['id'].value);
     const LENGTH = correctSentence.toString().length;
     const correctValue = input.attributes['data-value'].value;
     currentGridInputItem ++;
-    const doNotDisable = (currentGridInputItem === LENGTH && correctInputs < LENGTH - 1 );
 
     /* MARK CORRECT INPUT */
     if(input.value.toLowerCase() === correctValue.toLowerCase()){
-      correctInputs ++;
       input.setAttribute('data-success', 'true');
       input.setAttribute('style', "background-color:#4caf50");
-
-      if(!doNotDisable) {
-        input.setAttribute('disabled', true);
-      }
-
+      input.setAttribute('disabled', true);
     }
 
     /* MOVE FOCUS TO NEXT INPUT */
@@ -157,8 +139,19 @@
     }
 
     /* MARK GRID COMPLETE */
-    if (correctInputs === LENGTH) {
-      spellChallengeIsComplete = true;
+    if (isLastInput) {
+      for (var index in gridInputs) {
+        const attr = gridInputs[index].attributes;
+        if(attr && Object.hasOwn(attr,'disabled')) {
+          correctInputs ++;
+        }
+      }
+      if (correctInputs === LENGTH) {
+        spellChallengeIsComplete = true;
+      } else {
+        input.removeAttribute("disabled");
+        input.focus();
+      }
     }
 
     return;
